@@ -1,6 +1,6 @@
-// @SOURCE:/Users/jeremiah/code/play_framework_tutorial/conf/routes
+// @SOURCE:/Users/jlorich/projects/play_framework_tutorial/conf/routes
 // @HASH:7146bf5ffec26c2f847f18152bb46ae68389afe6
-// @DATE:Mon Jun 24 09:55:43 EDT 2013
+// @DATE:Mon Jun 24 10:35:05 EDT 2013
 
 import play.core._
 import play.core.Router._
