@@ -1,12 +1,3 @@
-This is your new Play 2.0 application
-=====================================
-
-This file will be packaged with your application, when using `play dist`.
-
-
-
-
-
 Things that we need notes on
 
 models
@@ -18,6 +9,8 @@ models
   - in memory, file based, postgre
 - validations in models don't work if you have multiple forms
 - parsing json doesn't work in java
+- creating and managing evolutions
+  - how to stop an evolution from editing
 
 controllers
 - making a controller action save and update
@@ -32,6 +25,7 @@ controllers
   - it is static
   - can only be filled in the render line
 - setting and reading form errors
+  - pulling data out of a form object will throw an exception if there are errors on the form
 - response codes
   - explicitly setting 200, 201, 404, etc
 - file downloads
@@ -43,7 +37,8 @@ views using scala
   - <- operator
   - square brackets instead of angle brackets
   - using single quotes for symbols
-- no else if
+  - passing code blocks to enumerators (ruby style)
+  - no else if
 - variable definition and scope
 - commenting
 - how to create new html input templates
