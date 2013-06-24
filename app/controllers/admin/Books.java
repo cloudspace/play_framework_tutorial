@@ -4,29 +4,43 @@ import java.util.List;
 import play.mvc.*;
 import play.data.*;
 import models.*;
-
+import views.html.books.*;
 /**
  * CRUD for books admin
  */
 public class Books extends Controller {
 
+    final static Form<Book> bookForm = form(Book.class);
+
+
     public static Result index()  {
-        return ok("Not implemented yet");
+        List<Book> books = Book.find.all();
+
+        return ok(index.render(books));
     }
 
-    public static Result show()  {
-        return ok("Not implemented yet");
+    public static Result show(Long id)  {
+        Book book = Book.find.byId(id);
+
+        return ok(show.render(book));
     }
 
     public static Result newRecord()  {
-        return ok("Not implemented yet");
+        Book book = new Book();
+        bookForm.fill(book);
+
+        return ok(form.render(bookForm, book));
+    }
+
+    public static Result edit(Long id)  {
+        Book book = Book.find.byId(id);
+
+        bookForm.fill(book);
+        
+        return ok(form.render(bookForm, book));
     }
 
     public static Result create()  {
-        return ok("Not implemented yet");
-    }
-
-    public static Result edit()  {
         return ok("Not implemented yet");
     }
 
