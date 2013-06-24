@@ -7,6 +7,7 @@ models
   - adding a finder object to the model
 - database setup
   - in memory, file based, postgre
+  - what to uncomment in the conf file
 - validations in models don't work if you have multiple forms
 - parsing json doesn't work in java
 - creating and managing evolutions
