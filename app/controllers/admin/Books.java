@@ -26,33 +26,26 @@ public class Books extends Controller {
 
     public static Result newRecord()  {
         Book book = new Book();
-        bookForm.fill(book);
 
-        return ok(newRecord.render(bookForm, book));
+        return ok(newRecord.render(form(Book.class).fill(book), book));
     }
 
     public static Result edit(Long id)  {
         Book book = Book.find.byId(id);
-
-        bookForm.fill(book);
         
-        return ok(edit.render(bookForm, book));
+        return ok(edit.render(bookForm.fill(book), book));
     }
 
     public static Result create()  {
         Form<Book> filledForm = bookForm.bindFromRequest();
-        System.out.println("helllo");
 
-        return ok("hello");
-        /*if(filledForm.hasErrors())  {
+        if(filledForm.hasErrors())  {
             return badRequest(filledForm.errorsAsJson());
         } else {
             Book book = filledForm.get();
-            System.out.println(book);
             book.save();
-            System.out.println(book);
             return redirect(controllers.admin.routes.Books.show(book.id));
-        }*/
+        }
     }
 
     public static Result update(Long id)  {
