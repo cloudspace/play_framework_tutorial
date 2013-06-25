@@ -5,6 +5,7 @@ Things to write
 - passing variables to views
 - json
 - database seeding (with a little reflection)
+- note: the basic play tutorials are well written and informative.  This tutorial assumes you have an understanding of the play basics.  We are trying to cover the next few steps of play development.
 
 Working with Play
 ===
@@ -84,7 +85,7 @@ This works fine for controllers that are children of the controllers package, bu
 
     controllers.my_subpackage.routes.Library.index
 
-For consistancy you can also access the base controllers with a similar style:
+For consistency you can also access the base controllers with a similar style:
 
     controllers.routes.application.index()
   

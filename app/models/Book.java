@@ -25,6 +25,7 @@ public class Book extends Model {
 
     @Id
     public Long id;
+    public Long getId()  { return id; }
 
     public String name;
 
@@ -113,5 +114,17 @@ public class Book extends Model {
      */
     public boolean checkedOut()  {
         return !checkedIn();
+    }
+
+    /**
+     * Status of the book
+     * At some point, add overdue to this information
+     */
+    public String status()  {
+        if(checkedOut())  {
+            return "Checked Out";
+        } else {
+            return "Checked In";
+        }
     }
 }

@@ -1,0 +1,7 @@
+@(bookForm: Form[models.Book], book: models.Book)
+
+@import models.Book
+
+@base("Books", "books") {
+    @form(bookForm, book, controllers.admin.routes.Books.create())
+}

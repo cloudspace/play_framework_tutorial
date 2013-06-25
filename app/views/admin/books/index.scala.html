@@ -3,14 +3,37 @@
 @base("Books", "books") {
   <div class="pull-right" style="margin-top:28px; font-style: oblique;">Library Book Management</div>
   <h2>Books</h2>
+    
+    <a href='@controllers.admin.routes.Books.newRecord()' class='button'>New Book</a>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Library</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for(book <- books)  {
+                <tr>
+                    <td>@book.name</td>
+                    <td>@book.status</td>
+                    <td>
+                        @if(book.library == null)  {
+                            None
+                        } else {
+                            @book.library.name
+                        }
+                    </td>
+                    <td>
+                        <a href='@controllers.admin.routes.Books.show(book.id)' class='button'>Show</a>
+                        <a href='@controllers.admin.routes.Books.edit(book.id)' class='button'>Edit</a>
+                        <a href='@controllers.admin.routes.Books.destroy(book.id)' class='button'>Destroy</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table> 
 
-
-  @for(book <- books) {
-    <div>
-      <h4>@book.name</h4>
-      <p>
-        @book.description
-      </p>
-    </div>
-  }
 }

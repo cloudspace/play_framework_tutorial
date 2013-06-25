@@ -26,17 +26,14 @@ public class Books extends Controller {
 
     public static Result newRecord()  {
         Book book = new Book();
-        bookForm.fill(book);
 
-        return ok(form.render(bookForm, book));
+        return ok(newRecord.render(form(Book.class).fill(book), book));
     }
 
     public static Result edit(Long id)  {
         Book book = Book.find.byId(id);
-
-        bookForm.fill(book);
         
-        return ok(form.render(bookForm, book));
+        return ok(edit.render(bookForm.fill(book), book));
     }
 
     public static Result create()  {
@@ -47,15 +44,30 @@ public class Books extends Controller {
         } else {
             Book book = filledForm.get();
             book.save();
-            return ok("Not implemented yet");
+            return redirect(controllers.admin.routes.Books.show(book.id));
         }
     }
 
     public static Result update(Long id)  {
-        return ok("Not implemented yet");
+        Form<Book> filledForm = bookForm.bindFromRequest();
+
+        if(filledForm.hasErrors())  {
+            return badRequest(filledForm.errorsAsJson());
+        } else {
+            Book book = filledForm.get();
+            book.update(id);
+            return redirect(controllers.admin.routes.Books.show(book.id));
+        }
     }
 
     public static Result destroy(Long id)  {
-        return ok("Not implemented yet");
+        Book book = Book.find.byId(id);
+
+        if(book == null)  {
+            return badRequest("Book not found");
+        } else  {
+            book.delete();
+            return redirect(controllers.admin.routes.Books.index());
+        }
     }
 }
