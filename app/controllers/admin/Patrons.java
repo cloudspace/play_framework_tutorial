@@ -16,8 +16,7 @@ public class Patrons extends Controller {
     public static Result index()  {
         List<Patron> patrons = Patron.find.all();
 
-        //return ok(index.render(patrons));
-        return ok("Not implemented yet");
+        return ok(index.render(patrons));
     }
 
     public static Result show(Long id)  {

@@ -1,5 +1,16 @@
 @(books: List[models.Book])
 
 @base("Books", "books") {
-  BOOKS BOOKS BOOKS BOOKS BOOKS
+  <div class="pull-right" style="margin-top:28px; font-style: oblique;">Library Book Management</div>
+  <h2>Books</h2>
+
+
+  @for(book <- books) {
+    <div>
+      <h4>@book.name</h4>
+      <p>
+        @book.description
+      </p>
+    </div>
+  }
 }

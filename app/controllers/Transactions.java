@@ -4,15 +4,19 @@ import java.util.List;
 import play.mvc.*;
 import play.data.*;
 import models.*;
+import views.html.*;
 
 public class Transactions extends Controller {
+
+    final static Form<Transaction> transactionForm = form(Transaction.class);
 
     /**
      * List all of the bobadRequests
      * include information about the library and checked in/out status, overdue
      */
     public static Result index()  {
-        return badRequest("Not implemented yet");
+        List<Transaction> transactionList = Transaction.find.all();
+        return ok(transactions.render(transactionList));
     }
 
     /**

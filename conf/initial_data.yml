@@ -1,0 +1,44 @@
+books:
+- !!models.Book
+    name: "A Tale of Two Cities"
+    description: "A Tale of Two Cities (1859) is a novel by Charles Dickens, set in London and Paris before and during the French Revolution. With well over 200 million copies sold, it ranks among the most famous works in the history of fictional literature.[2]"
+- !!models.Book
+    name: "Moby Dick"
+    description: "Moby-Dick; or, The Whale is a novel by Herman Melville, first published in 1851.[2] It is considered to be one of the Great American Novels and a treasure of world literature. The story tells the adventures of wandering sailor Ishmael, and his voyage on the whaleship Pequod, commanded by Captain Ahab. Ishmael soon learns that Ahab has one purpose on this voyage: to seek out Moby Dick, a ferocious, enigmatic white sperm whale. In a previous encounter, the whale destroyed Ahab's boat and bit off his leg, which now drives Ahab to take revenge."
+- !!models.Book
+    name: "The Time Machine"
+    description: "The Time Machine is a science fiction novella by H. G. Wells, published in 1895 and later adapted into two feature films of the same name, as well as two television versions, and a large number of comic book adaptations. It indirectly inspired many more works of fiction in many media. This story is generally credited with the popularisation of the concept of time travel using a vehicle that allows an operator to travel purposefully and selectively. The term "time machine", coined by Wells, is now universally used to refer to such a vehicle. This work is an early example of the Dying Earth subgenre."
+- !!models.Book
+    name: "The Great Gatsby" 
+    description: "The Great Gatsby is a 1925 novel written by American author F. Scott Fitzgerald that follows a cast of characters living in the fictional town of West Egg on prosperous Long Island in the summer of 1922. The story primarily concerns the young and mysterious millionaire Jay Gatsby and his quixotic passion for the beautiful Daisy Buchanan. Considered to be Fitzgerald's magnum opus, The Great Gatsby explores themes of decadence, idealism, resistance to change, social upheaval, and excess, creating a portrait of the Jazz Age that has been described as a cautionary tale regarding the American Dream.[1]"
+- !!models.Book
+    name: "Ender's Game"
+    description: "Ender's Game (1985) is a military science fiction novel by American author Orson Scott Card. Set in Earth's future, the novel presents an imperilled mankind that has barely survived two conflicts with the \"Buggers\", an insectoid alien species. In preparation for an anticipated third invasion, an international fleet maintains a school to find and train future fleet commanders. The world's most talented children, including the novel's protagonist, Ender Wiggin, are taken at a very young age to a training center known as the Battle School. There, teachers train them in the arts of war through increasingly difficult games including ones undertaken in zero gravity in the Battle Room, where Ender's tactical genius is revealed."
+- !!models.Book
+    name: "Jurassic Park"
+    description: "Jurassic Park is a science fiction novel written by Michael Crichton. Often considered a cautionary tale on unconsidered biological tinkering in the same spirit as Mary Shelley's Frankenstein, it uses the metaphor of the collapse of an amusement park showcasing genetically recreated dinosaurs to illustrate the mathematical concept of chaos theory and its philosophical implications. In 1993, Steven Spielberg adapted the book into the blockbuster film Jurassic Park, which won 3 Oscars, 19 other awards, and 15 nominations. The book's sequel, The Lost World (1995), was also adapted by Spielberg into a film in 1997. A third film directed by Joe Johnston, drew several elements, themes and scenes from both books that were ultimately not utilized in either of the previous films such as the aviary and boat scenes."
+- !!models.Book
+    name: "Animal Farm"
+    description:  "Animal Farm is an allegorical and dystopian novel by George Orwell, published in England on 17 August 1945. According to Orwell, the book reflects events leading up to the Russian Revolution of 1917 and then on into the Stalin era in the Soviet Union.[1] Orwell, a democratic socialist,[2] was a critic of Joseph Stalin and hostile to Moscow-directed Stalinism, especially after his experiences with the NKVD and the Spanish Civil War.[3] The Soviet Union, he believed, had become a brutal dictatorship, built upon a cult of personality and enforced by a reign of terror. In a letter to Yvonne Davet, Orwell described Animal Farm as a satirical tale against Stalin \"une conte satirique contre Stalin\",[4] and in his essay \"Why I Write\" (1946), he wrote that Animal Farm was the first book in which he had tried, with full consciousness of what he was doing, \"to fuse political purpose and artistic purpose into one whole\"."
+
+patrons:
+- !!models.Patron
+    name: "Paul Molive"
+- !!models.Patron
+    name: "Anna Mull"
+- !!models.Patron
+    name: "Gail Forcewind"
+- !!models.Patron
+    name: "Paige Turner"
+- !!models.Patron
+    name: "Bob Frapples"
+- !!models.Patron
+    name: "Walter Melon"
+- !!models.Patron
+    name: "Barb Ackue"
+- !!models.Patron
+    name: "Buck Kinnear"
+- !!models.Patron
+    name: "Ira Membrit"
+- !!models.Patron
+    name: "Shonda Leer"
