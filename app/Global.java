@@ -18,10 +18,11 @@ public class Global extends GlobalSettings {
                 
                 Map<String,List<Object>> all = (Map<String,List<Object>>)Yaml.load("initial_data.yml");
 
-                // This order is arbitrary for now (JH 5-9-2013)
+                Ebean.save(all.get("libraries"));
                 Ebean.save(all.get("books"));
                 Ebean.save(all.get("patrons"));
                 Ebean.save(all.get("transactions"));
+                
                 
             }
         }

@@ -4,7 +4,8 @@
 
 # Home page
 GET     /                       controllers.Application.index()
-GET     /transactions           controllers.Transactions.index()
+GET     /library                controllers.Transactions.index()
+GET     /library/:id            controllers.Transactions.libraryIndex(id: Long)
 POST    /checkout/:id           controllers.Transactions.saveCheckout(id: Long)
 POST    /checkin/:id            controllers.Transactions.saveCheckin(id: Long)
 

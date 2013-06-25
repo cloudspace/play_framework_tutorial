@@ -15,9 +15,27 @@ public class Transactions extends Controller {
      * include information about the library and checked in/out status, overdue
      */
     public static Result index()  {
-        List<Transaction> openTransactionList = Transaction.find.where().isNull("checkinAt").findList();
-        List<Book> availableBookList = Book.find.fetch("transactions").where().isNotNull("transactions.checkinAt").findList();
-        return ok(transactions.render(openTransactionList, availableBookList));
+        Library firstLibrary = Library.find.all().get(0);
+        return libraryIndex(firstLibrary.id);
+    }
+
+    public static Result libraryIndex(Long id)  {
+        Library library = Library.find.byId(id);
+        // List<Transaction> openTransactionList = Transaction.find
+        //                                                    .where().isNull("checkinAt").where().eq("library.id",library.id).findList();
+
+        List<Book> loanedBookList = Book.find
+                                           .fetch("library").fetch("transactions")
+                                           .where().eq("library.id",library.id)
+                                           .where().isNull("transactions.checkinAt")
+                                           .findList();
+
+        List<Book> availableBookList = Book.find
+                                           .fetch("library").fetch("transactions").where().eq("library.id",library.id)
+                                           .where().isNotNull("transactions.checkinAt")
+                                           .findList();
+        
+        return ok(transactions.render(library, loanedBookList, availableBookList));
     }
 
     /**
