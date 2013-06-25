@@ -3,9 +3,35 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index()
-GET     /books                      controllers.admin.Books.index()
-GET     /patrons                    controllers.admin.Libraries.index()
+GET     /                       controllers.Application.index()
+GET     /checkout/:bookId       controllers.Transactions.checkout(bookId: Long)
+POST    /checkout/:bookId       controllers.Transactions.saveCheckout(bookId: Long)
+GET     /checkin/:id            controllers.Transactions.checkin(id: Long)
+POST    /checkin/:id            controllers.Transactions.saveCheckin(id: Long)
+
+GET     /admin/books            controllers.admin.Books.index()
+GET     /admin/books/new        controllers.admin.Books.newRecord()
+GET     /admin/books/:id        controllers.admin.Books.show(id: Long)
+GET     /admin/books/:id/edit   controllers.admin.Books.edit(id: Long)
+POST    /admin/books            controllers.admin.Books.create()
+POST    /admin/books/:id        controllers.admin.Books.update(id: Long)
+DELETE  /admin/books/:id        controllers.admin.Books.destroy(id: Long)     
+
+GET     /admin/patrons          controllers.admin.Patrons.index()
+GET     /admin/patrons/new      controllers.admin.Patrons.newRecord()
+GET     /admin/patrons/:id      controllers.admin.Patrons.show(id: Long)
+GET     /admin/patrons/:id/edit controllers.admin.Patrons.edit(id: Long)
+POST    /admin/patrons          controllers.admin.Patrons.create()
+POST    /admin/patrons/:id      controllers.admin.Patrons.update(id: Long)
+DELETE  /admin/patrons/:id      controllers.admin.Patrons.destroy(id: Long)     
+
+GET     /admin/libraries          controllers.admin.Libraries.index()
+GET     /admin/libraries/new      controllers.admin.Libraries.newRecord()
+GET     /admin/libraries/:id      controllers.admin.Libraries.show(id: Long)
+GET     /admin/libraries/:id/edit controllers.admin.Libraries.edit(id: Long)
+POST    /admin/libraries          controllers.admin.Libraries.create()
+POST    /admin/libraries/:id      controllers.admin.Libraries.update(id: Long)
+DELETE  /admin/libraries/:id      controllers.admin.Libraries.destroy(id: Long)     
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

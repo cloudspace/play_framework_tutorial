@@ -15,7 +15,7 @@ public class Patron extends Model {
     /**
      * Database accessor
      */
-    public static Finder<Long, Book> find = new Finder<Long, Book>(Long.class, Book.class);
+    public static Finder<Long, Patron> find = new Finder<Long, Patron>(Long.class, Patron.class);
 
     // -----------------------------------
     // PROPERTIES

@@ -14,7 +14,7 @@ public class Libraries extends Controller {
         return ok("Not implemented yet");
     }
 
-    public static Result show()  {
+    public static Result show(Long id)  {
         return ok("Not implemented yet");
     }
 
@@ -26,15 +26,15 @@ public class Libraries extends Controller {
         return ok("Not implemented yet");
     }
 
-    public static Result edit()  {
+    public static Result edit(Long id)  {
         return ok("Not implemented yet");
     }
 
-    public static Result update()  {
+    public static Result update(Long id)  {
         return ok("Not implemented yet");
     }
 
-    public static Result destroy()  {
+    public static Result destroy(Long id)  {
         return ok("Not implemented yet");
     }
 }

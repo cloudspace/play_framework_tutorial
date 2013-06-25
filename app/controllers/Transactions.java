@@ -18,7 +18,7 @@ public class Transactions extends Controller {
     /**
      * Form to checkout a bug
      */
-    public static Result checkout()  {
+    public static Result checkout(Long bookId)  {
         return badRequest("Not implemented yet");
     }
 
@@ -29,14 +29,14 @@ public class Transactions extends Controller {
      * - bobadRequest and patron must be attached to the same library
      * - checkoutAt must be set
      */
-    public static Result saveCheckout()  {
+    public static Result saveCheckout(Long id)  {
         return badRequest("Not implemented yet");
     }
 
     /**
      * Form to checkin a bobadRequest
      */
-    public static Result checkin()  {
+    public static Result checkin(Long id)  {
         return badRequest("Not implemented yet");
     }
 
@@ -45,7 +45,7 @@ public class Transactions extends Controller {
      * validate on:
      * - checkinAt must be set
      */
-    public static Result saveCheckin()  {
+    public static Result saveCheckin(Long bookId)  {
         return badRequest("Not implemented yet");
     }
 }

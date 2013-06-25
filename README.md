@@ -1,3 +1,11 @@
+Things to write
+- example of a form input template
+- our validation section
+- reading request parameters
+- passing variables to views
+- json
+- database seeding (with a little reflection)
+
 Working with Play
 ===
 ---
@@ -31,7 +39,7 @@ Models
 In play the models are much closer to the database than seen in a framework like rails.  Instead of writing the migrations and having the models built from the db, the models actually define the database and the migrations can be automatically generated from the changes.
 
 
-### Decoraters
+### Decorators
 
 The javax.persistence package offers a number of decorators to help define database interaction.
 
@@ -42,7 +50,7 @@ The @id decorator goes on a member of an @Entity class and defines the database 
 There area number of decorators available between play and javax that are viewable in their respective documentation.
 
 ### Validations
-Play offers model-level validations in the form of constraint decorators.  The full list can be seen on [this page](http://www.playframework.com/documentation/api/2.0/java/play/data/validation/Constraints.html).
+Play offers model-level validations in the form of constraint decorators.  The full list can be seen on [this page](http://www.playframework.com/documentation/api/2.0/java/play/data/validation/Constraints.html).  Many default validations map directly to database changes.  For example, the @Required decorator sets the column in the db to not null.
 
 These are nice for simple models, but validations in models can't be used well if you have have multiple forms to generate an object. Since you cant save the object without having it be complete, it's impossible to have multi-page step-based object creation.  To get around this all validations need to be done in the controller.
 
@@ -50,9 +58,11 @@ These are nice for simple models, but validations in models can't be used well i
 Controllers
 --------------------------------
 ### Saving and Updating
-Often in tutorials the methods save and update are used on models without much description being give.  These methods are almost identical, but misunderstanding them can lead to many issues.  Save works as expected, saving the object to the database if none exists, or updating the existing object.  Update differers in that it takes in an id parameter, sets the current object to have that id, and then calls save.
+Often in tutorials the methods save and update are used on models without much description being given.  These methods are almost identical, but misunderstanding them can lead to many issues.  Save works as expected, saving the object to the database if none exists, or updating the existing object.  Update differers in that it takes in an id parameter, sets the current object to have that id, and then calls save.
 
 Update allows you to basically take one object and save it's contents onto an object with another id.  In most cases save is more than enough.
+
+One gotcha is that form data pulled from the request does not necessarily include the object id.  If you don't check that exists and set it, calling save can create a duplicate of the object in the database.
 
 ### Parameters
 **Optional Parameters in routes**  
@@ -91,6 +101,8 @@ In a controller there is generally one shared static form object for the control
 
 Inside of an action we can take this form object and upon view rendering, pass in the form and fill it with data from a model object of the corresponding class:
 
+    private static final Form<Book> bookForm = new Form<Book>();
+
     public static Result edit(Long id)  {
         Book book = Book.find.byId(id);
 
@@ -99,15 +111,17 @@ Inside of an action we can take this form object and upon view rendering, pass i
             return notFound("No book with that id was found!");
         } else {
             // Render edit form template
-            return ok(edit.render(campaignForm.fill(campaign), book);
+            return ok(edit.render(bookForm.fill(book), book);
         }
     }
+
+The book object is accessible from the form by calling bookForm.get().  You should not depend on this.  If there are validation errors, calling bookForm.get() will throw an exception instead of returning the object.  In all of our form views, we pass both the form and the model instance to the view.
 
 
 **Errors**  
 There are two main types of errors that need to be thrown: Form validation errors, and general HTTP errors.
 
-The general HTTP status errors are quite simple to use, and play provides result methods for each.  Instead of retuning ok() from an action you simply return the approrpiate result.  The full list of available results can be found [here](http://www.playframework.com/documentation/api/2.0/java/play/mvc/Results.html#method_summary).  You can see an example of retuning a notFount result (HTP 404) in the previous example.
+The general HTTP status errors are quite simple to use, and play provides result methods for each.  Instead of retuning ok() from an action you simply return the approrpiate result.  The full list of available results can be found [here](http://www.playframework.com/documentation/api/2.0/java/play/mvc/Results.html#method_summary).  You can see an example of retuning a notFound result (HTP 404) in the previous example.
 
 **response() and setting headers**  
 In each controller action there is an available method called response().  When called it returns the current response object which will eventually be returned to the end user.  We can use this object to set any appropriate HTTP Headers.
@@ -158,7 +172,7 @@ Database Setup
 --------------------------------
 See the play database documentation [here](http://www.playframework.com/documentation/2.0.4/JavaDatabase)
 
-By default play only supports the h2 database format.  In the documentation linked above there are instructions for importing other drivers.  This can also be accompliched wish maven.
+By default play only supports the h2 database format.  In the documentation linked above there are instructions for importing other drivers.  This can also be accomplished wish maven.
 
 Database setup is defined in *application.conf*.  There are four necessary parameters: driver, url, user, pass. Here is an example postgresql config:
 

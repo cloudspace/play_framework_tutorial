@@ -12,7 +12,6 @@ public class Books extends Controller {
 
     final static Form<Book> bookForm = form(Book.class);
 
-
     public static Result index()  {
         List<Book> books = Book.find.all();
 
@@ -41,14 +40,22 @@ public class Books extends Controller {
     }
 
     public static Result create()  {
+        Form<Book> filledForm = bookForm.bindFromRequest();
+
+        if(filledForm.hasErrors())  {
+            return badRequest(filledForm.errorsAsJson());
+        } else {
+            Book book = filledForm.get();
+            book.save();
+            return ok("Not implemented yet");
+        }
+    }
+
+    public static Result update(Long id)  {
         return ok("Not implemented yet");
     }
 
-    public static Result update()  {
-        return ok("Not implemented yet");
-    }
-
-    public static Result destroy()  {
+    public static Result destroy(Long id)  {
         return ok("Not implemented yet");
     }
 }
