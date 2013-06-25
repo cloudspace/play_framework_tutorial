@@ -1,8 +1,8 @@
 @(books: List[models.Book])
 
 @base("Books", "books") {
-  <div class="pull-right" style="margin-top:28px; font-style: oblique;">Library Book Management</div>
-  <h2>Books</h2>
+    <div class="pull-right" style="margin-top:28px; font-style: oblique;">Library Book Management</div>
+    <h2>Books</h2>
     
     <a href='@controllers.admin.routes.Books.newRecord()' class='button'>New Book</a>
     <table class="table table-striped table-bordered">

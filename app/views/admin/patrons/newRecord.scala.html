@@ -1,0 +1,7 @@
+@(patronForm: Form[models.Patron], patron: models.Patron)
+
+@import models.Patron
+
+@base("Patrons", "patrons") {
+    @form(patronForm, patron, controllers.admin.routes.Patrons.create())
+}

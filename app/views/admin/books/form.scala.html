@@ -15,7 +15,7 @@
 
     @select(
         bookForm("library.id"),
-        options = Library.find.all().map { l => l.id.toString() -> l.name },
+        options = Library.selectCollection.toSeq,
         '_default -> "Choose One", '_label -> "Library"
     )
     <div class='actions'>

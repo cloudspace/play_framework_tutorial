@@ -1,5 +1,7 @@
-@(book: Book)
+@(book: models.Book)
 
 @base("Books", "books") {
   <p>This is the incomplete show page for @book.name.</p>
+
+  <p>@book.description</p>
 }

@@ -1,3 +1,5 @@
+@(patron: models.Patron)
+
 @base("Patrons", "patrons") {
-  PATRONS
+  <p>This is the incomplete show page for @patron.name associated with the library @patron.getLibrary.getName.</p>
 }

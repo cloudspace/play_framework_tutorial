@@ -1,6 +1,36 @@
 @(patrons: List[models.Patron])
 
 @base("Patrons", "patrons") {
-  <div class="pull-right" style="margin-top:28px; font-style: oblique;">Library Patron Management</div>
-  <h2>Patrons</h2>
+    <div class="pull-right" style="margin-top:28px; font-style: oblique;">Library Patron Management</div>
+    <h2>Patrons</h2>
+
+    <a href='@controllers.admin.routes.Patrons.newRecord()' class='button'>New Patron</a>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Library</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for(patron <- patrons)  {
+                <tr>
+                    <td>@patron.name</td>
+                    <td>
+                        @if(patron.library == null)  {
+                            None
+                        } else {
+                            @patron.library.name
+                        }
+                    </td>
+                    <td>
+                        <a href='@controllers.admin.routes.Patrons.show(patron.id)' class='button'>Show</a>
+                        <a href='@controllers.admin.routes.Patrons.edit(patron.id)' class='button'>Edit</a>
+                        <a href='@controllers.admin.routes.Patrons.destroy(patron.id)' class='button'>Destroy</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table> 
 }

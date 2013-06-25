@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import javax.persistence.*;
 import play.db.ebean.*;
@@ -36,4 +38,14 @@ public class Library extends Model {
      * Default constructor required
      */
     public Library()  {}
+
+    public static HashMap<String, String> selectCollection()  {
+        HashMap<String, String> output = new HashMap<String, String>();
+
+        for(Library l : Library.find.all())  {
+            output.put(l.id.toString(), l.name);
+        }
+
+        return output;
+    }
 }

@@ -22,42 +22,55 @@ public class Patrons extends Controller {
     public static Result show(Long id)  {
         Patron patron = Patron.find.byId(id);
 
-        //return ok(show.render(patron));
-        return ok("Not implemented yet");
+        return ok(show.render(patron));
     }
 
     public static Result newRecord()  {
         Patron patron = new Patron();
-        patronForm.fill(patron);
 
-        return ok(form.render(patronForm, patron));
+        return ok(newRecord.render(patronForm.fill(patron), patron));
     }
 
     public static Result edit(Long id)  {
         Patron patron = Patron.find.byId(id);
 
-        patronForm.fill(patron);
-        
-        return ok(form.render(patronForm, patron));
+        return ok(edit.render(patronForm.fill(patron), patron));
     }
 
     public static Result create()  {
         Form<Patron> filledForm = patronForm.bindFromRequest();
 
         if(filledForm.hasErrors())  {
-            return badRequest(filledForm.errorsAsJson());
+            Patron patron = new Patron();
+            return ok(newRecord.render(filledForm, patron));
         } else {
             Patron patron = filledForm.get();
             patron.save();
-            return ok("Not implemented yet");
+            return redirect(controllers.admin.routes.Patrons.show(patron.id));
         }
     }
 
     public static Result update(Long id)  {
-        return ok("Not implemented yet");
+        Form<Patron> filledForm = patronForm.bindFromRequest();
+
+        if(filledForm.hasErrors())  {
+            Patron patron = Patron.find.byId(id);
+            return ok(newRecord.render(filledForm, patron));
+        } else {
+            Patron patron = filledForm.get();
+            patron.update(id);
+            return redirect(controllers.admin.routes.Patrons.show(patron.id));
+        }
     }
 
     public static Result destroy(Long id)  {
-        return ok("Not implemented yet");
+        Patron patron = Patron.find.byId(id);
+
+        if(patron == null)  {
+            return badRequest("Patron not found");
+        } else  {
+            patron.delete();
+            return redirect(controllers.admin.routes.Patrons.index());
+        }
     }
 }
