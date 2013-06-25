@@ -40,7 +40,9 @@ public class Books extends Controller {
         Form<Book> filledForm = bookForm.bindFromRequest();
 
         if(filledForm.hasErrors())  {
-            return badRequest(filledForm.errorsAsJson());
+            //can't pull out of the form if there are errors
+            Book book = new Book();
+            return ok(newRecord.render(filledForm, book));
         } else {
             Book book = filledForm.get();
             book.save();
@@ -52,7 +54,9 @@ public class Books extends Controller {
         Form<Book> filledForm = bookForm.bindFromRequest();
 
         if(filledForm.hasErrors())  {
-            return badRequest(filledForm.errorsAsJson());
+            //can't pull out of the form if there are errors
+            Book book = Book.find.byId(id);
+            return ok(edit.render(filledForm, book));
         } else {
             Book book = filledForm.get();
             book.update(id);

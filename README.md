@@ -6,6 +6,8 @@ Things to write
 - json
 - database seeding (with a little reflection)
 - note: the basic play tutorials are well written and informative.  This tutorial assumes you have an understanding of the play basics.  We are trying to cover the next few steps of play development.
+- play devs are unhelpful
+  - http://play.lighthouseapp.com/projects/82401/tickets/504-support-tuple-22-not-just-tuple-18-in-apidataformsscala
 
 Working with Play
 ===
