@@ -16,7 +16,7 @@ public class Transactions extends Controller {
      */
     public static Result index()  {
         List<Transaction> openTransactionList = Transaction.find.where().isNull("checkinAt").findList();
-        List<Book> availableBookList = Book.find.fetch("transactions").findList();
+        List<Book> availableBookList = Book.find.fetch("transactions").where().isNotNull("transactions.checkinAt").findList();
         return ok(transactions.render(openTransactionList, availableBookList));
     }
 
@@ -51,6 +51,10 @@ public class Transactions extends Controller {
      * - checkinAt must be set
      */
     public static Result saveCheckin(Long bookId)  {
-        return badRequest("Not implemented yet");
+        Book book = Book.find.byId(bookId);
+        book.checkIn();
+
+        return redirect(controllers.routes.Transactions.index());
+
     }
 }

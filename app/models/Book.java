@@ -1,6 +1,7 @@
 package models;
 
 import java.util.List;
+import java.util.Date;
 import javax.persistence.*;
 import play.db.ebean.*;
 import com.avaje.ebean.*;
@@ -55,6 +56,45 @@ public class Book extends Model {
         this.name = name;
         this.description = description;
     }
+
+    /**
+     * Checks the book in
+     */
+    public boolean checkIn()
+    {
+        // Fail if the book is already checked in
+        if (this.checkedIn()) return false;
+
+        // Fail if there is no associated transactions
+        if (this.transactions.size() == 0) return false;
+
+        // Check the book in
+        Transaction lastTransaction = this.transactions.get(this.transactions.size() - 1);
+        lastTransaction.checkinAt = new Date();
+
+        lastTransaction.save();
+        
+        return true;
+    }
+
+    /**
+     * Checks the book in
+     */
+    // public boolean checkOut(Patron patron)
+    // {
+    //     // Fail if the book is already checked in
+    //     if (this.checkedIn()) return false;
+
+    //     // Fail if there is no associated transactions
+    //     if (this.transactions.size() == 0) return false;
+
+    //     // Check the book in
+    //     Transaction lastTransaction = this.transactions.get(this.transactions.size() - 1);
+    //     lastTransaction.checkinAt = new Date();
+        
+    //     return true;
+    // }
+
 
     /**
      * Test if the book is checked in by looking at it's transactions
