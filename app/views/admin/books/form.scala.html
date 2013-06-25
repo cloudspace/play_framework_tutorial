@@ -1,5 +1,24 @@
-@(bookForm: Form[models.Book], book: models.Book)
+@(bookForm: Form[models.Book], book: models.Book, actionRoute: play.api.mvc.Call)
 
-@base("Books", "books") {
-  BOOK FORM
+@import helper._
+
+@helper.form(action = actionRoute, 'method -> "POST")  {
+    @inputText(
+        bookForm("name"),
+        '_label -> "Name"
+    )
+
+    @textarea(
+        bookForm("description"),
+        '_label -> "Description"
+    )
+
+    @select(
+        bookForm("library"),
+        Library.find.all().map { l => l.id.toString() -> l.name },
+        '_default -> "Choose One", '_label -> "Library"
+    )
+    <div class='actions'>
+        <input type='submit' class='button' formmethod='post' value='Save' />
+    </div>
 }

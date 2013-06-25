@@ -28,7 +28,7 @@ public class Books extends Controller {
         Book book = new Book();
         bookForm.fill(book);
 
-        return ok(form.render(bookForm, book));
+        return ok(newRecord.render(bookForm, book));
     }
 
     public static Result edit(Long id)  {
@@ -36,26 +36,45 @@ public class Books extends Controller {
 
         bookForm.fill(book);
         
-        return ok(form.render(bookForm, book));
+        return ok(edit.render(bookForm, book));
     }
 
     public static Result create()  {
+        Form<Book> filledForm = bookForm.bindFromRequest();
+        System.out.println("helllo");
+
+        return ok("hello");
+        /*if(filledForm.hasErrors())  {
+            return badRequest(filledForm.errorsAsJson());
+        } else {
+            Book book = filledForm.get();
+            System.out.println(book);
+            book.save();
+            System.out.println(book);
+            return redirect(controllers.admin.routes.Books.show(book.id));
+        }*/
+    }
+
+    public static Result update(Long id)  {
         Form<Book> filledForm = bookForm.bindFromRequest();
 
         if(filledForm.hasErrors())  {
             return badRequest(filledForm.errorsAsJson());
         } else {
             Book book = filledForm.get();
-            book.save();
-            return ok("Not implemented yet");
+            book.update(id);
+            return redirect(controllers.admin.routes.Books.show(book.id));
         }
     }
 
-    public static Result update(Long id)  {
-        return ok("Not implemented yet");
-    }
-
     public static Result destroy(Long id)  {
-        return ok("Not implemented yet");
+        Book book = Book.find.byId(id);
+
+        if(book == null)  {
+            return badRequest("Book not found");
+        } else  {
+            book.delete();
+            return redirect(controllers.admin.routes.Books.index());
+        }
     }
 }

@@ -74,4 +74,16 @@ public class Book extends Model {
     public boolean checkedOut()  {
         return !checkedIn();
     }
+
+    /**
+     * Status of the book
+     * At some point, add overdue to this information
+     */
+    public String status()  {
+        if(checkedOut())  {
+            return "Checked Out";
+        } else {
+            return "Checked In";
+        }
+    }
 }
