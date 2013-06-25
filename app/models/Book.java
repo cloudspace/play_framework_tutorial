@@ -72,6 +72,6 @@ public class Book extends Model {
      * Test if the book is checked out
      */
     public boolean checkedOut()  {
-        return !checkedOut();
+        return !checkedIn();
     }
 }

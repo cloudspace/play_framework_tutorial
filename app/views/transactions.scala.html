@@ -1,6 +1,20 @@
-@(transactions: List[models.Transaction])
+@(openTransactions: List[models.Transaction], availablebooks: List[models.Book])
 
 @base("Check In / Check Out", "transactions") {
-  Checked out books:
-  Available books:
+  <div class="pull-right" style="margin-top:28px; font-style: oblique;">Library Book Management</div>
+  <h2>Transactions</h2>
+
+@*
+  @for(transaction <- openTransactions) {
+    <div>
+      <h4>@transaction.patron.getName() - @transaction.book.getName()</h4>
+    </div>
+  }
+
+  @for(books <- availablebooks) {
+    <div>
+      <h4>@book.name</h4>
+    </div>
+  }
+  *@
 }

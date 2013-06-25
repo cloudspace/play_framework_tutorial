@@ -15,8 +15,9 @@ public class Transactions extends Controller {
      * include information about the library and checked in/out status, overdue
      */
     public static Result index()  {
-        List<Transaction> transactionList = Transaction.find.all();
-        return ok(transactions.render(transactionList));
+        List<Transaction> openTransactionList = Transaction.find.where().isNull("checkinAt").findList();
+        List<Book> availableBookList = Book.find.fetch("transactions").findList();
+        return ok(transactions.render(openTransactionList, availableBookList));
     }
 
     /**

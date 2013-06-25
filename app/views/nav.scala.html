@@ -11,7 +11,6 @@
                     <div class="nav-collapse collapse">
                         <ul class="nav">
                             <li @if(section=="index"){ class="active"}><a href="@routes.Application.index()">Home</a></li>
-                            <!--<li><a href="#about">About</a></li>-->
                             <li @if(section=="transactions"){ class="active"}><a href="@controllers.routes.Transactions.index()">Check in / Check out</a></li>
                             
                             <li class="dropdown @if(section=="books" || section=="patrons"){ active}">
