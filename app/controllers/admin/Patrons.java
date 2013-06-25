@@ -4,7 +4,7 @@ import java.util.List;
 import play.mvc.*;
 import play.data.*;
 import models.*;
-import views.html.patrons.*;
+import views.html.admin.patrons.*;
 
 /**
  * CRUD for patrons admin

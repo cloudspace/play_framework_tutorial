@@ -4,7 +4,7 @@ import java.util.List;
 import play.mvc.*;
 import play.data.*;
 import models.*;
-import views.html.books.*;
+import views.html.admin.books.*;
 /**
  * CRUD for books admin
  */
