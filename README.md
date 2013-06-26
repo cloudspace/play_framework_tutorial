@@ -1,8 +1,5 @@
 Things to write
 - example of a form input template
-- our validation section
-- reading request parameters
-- passing variables to views
 - json
 - database seeding (with a little reflection)
 - note: the basic play tutorials are well written and informative.  This tutorial assumes you have an understanding of the play basics.  We are trying to cover the next few steps of play development.
@@ -72,11 +69,114 @@ One gotcha is that form data pulled from the request does not necessarily includ
 
   - note changes from play 2.0 to 2.1
 
-**Reading requests parameters**  
-  - in a form and outside of a form 
-**Passing variables to views**  
+**Reading request parameters**
+Reading request parameters is much more difficult here than in other frameworks.  Reading get parameters that aren't part of a form submission is almost impossible.  Reading form parameters looks like this:
 
-**Cloudspace request validation system**  
+    String name = request().body().asFormUrlEncoded().get("name").toString();
+
+If the form does not include the field, this call will throw an exception.  This can be a problem on checkboxes and selects because if the user doesn't select any options, html will not include the input in the post.
+
+I have written some helper methods to make accessing the request easier.
+
+    private static String requestParam(String name)  {
+            return requestParamArray(name)[0];
+    }
+
+    private static String[] requestParamArray(String name)  {
+        if(request().body().asFormUrlEncoded().containsKey(name)) {
+            return request().body().asFormUrlEncoded().get(name);
+        } else {
+            return new String[0];
+        }
+    }
+
+###Controller Validations
+Controller based validations are preferable to model based validations due to their flexibility.  The reject method is used to add errors to the form.  This example shows an error on the name field and a general error on the form object.
+
+    public static Result update(Long id)  {
+        Form<Book> filledForm = bookForm.bindFromRequest();
+
+        if(request().body().asFormUrlEncoded().get("name").toString().equals(""))  {
+            filledForm.reject("name", "Name can't be blank.");
+        }
+        if(Library.find.all().size() == 0)  {
+            filledForm.reject("Books cannot be created if there are no libraries in the system.");
+        }
+
+        if(filledForm.hasErrors())  {
+            Book book = Book.find.byId(id); //can't pull out of the form if there are errors
+            return ok(edit.render(filledForm, book));
+        } else {
+            Book book = filledForm.get();
+            book.update(id);
+            return redirect(controllers.admin.routes.Books.show(book.id));
+        }
+    }
+
+After the form is processed, the hasErrors method is used to determine if the form is valid.  If hasErrors returns false, the get method will throw an exception.  This is why we pass the book object into the view along with the form object.  In the view, you cannot depend on filledForm.get().getId() to setup routes.  You have to explicitly pass an id or a book object.
+
+**Cloudspace controller validation system**  
+Reading a form object is for validations is awfully wordy and leads to some duplicated code in things like phone number and email validations.  We have written a small validation framework to standardize some of this code. 
+
+    import utils.validation.*;
+
+    public static Result update(Long id)  {
+        Form<Book> filledForm = bookForm.bindFromRequest();
+        Validator v = new Validator(filledForm);
+
+        v.add(new RequiredValidation("name", "Name is required"));
+        v.add(new LibrariesExistValidation("Template type is required"));
+
+        filledForm = v.validate();
+        ...
+
+The Validator object collects Validation objects then runs them to determine the form errors.
+
+A few basic validations are included as a demonstration.  Each one needs a constructor and an isValid method.
+
+    public class RegexMatchValidation extends Validation {
+        private Pattern regex;
+
+        public RegexMatchValidation(String field, String errorMessage, Pattern regex)  {
+            super(field, errorMessage);
+            this.regex = regex;
+        }
+
+        public boolean isValid(Form form) {
+            String value = form.data().get(field).toString();
+            Matcher matcher = regex.matcher(value);
+            if(!matcher.find()) {
+                addFieldError();
+                return false;
+            }
+            return true;
+        }
+    }
+
+The constructor should generally call the Validation superclass constructor and set any additional data needed for the validation.  The isValid method should return true if valid.  If an error is detected, it should set the error message with addFieldError or addBaseError and return false.Look at the Validation class for a few more options on setting and managing errors.
+
+###Interacting with views
+
+**Passing variables into views**
+For some reason, the play tutorials gloss over passing variables into views.  The two sticking points are no optional arguments and the scala syntax on the view.
+
+In the controller:
+    
+    public static Result edit(Long id)  {
+        Book book = Book.find.byId(id); 
+
+        return ok(edit.render(bookForm.fill(book), book)
+    }
+
+In the view:
+
+    @(bookForm: Form[models.Book], book: models.Book)
+
+    @base("Books", "books") {
+        Your content here
+    }
+    
+Note that using models.Book is necessary because it occurs before any import models.* calls.  In scala, the variable goes before the type in variable declarations.  Rails uses a similar method to get variables onto views by copying every instance variable onto the controller onto the view instance.
 
 **Routes with namespaced controllers**    
 When you add your controllers to a package the naming conventions for accessing their respective routes isn't quite intuitive.  When play compiles your project a routes object is added to each controller package.  In documentation you may often see references to things like
@@ -90,8 +190,6 @@ This works fine for controllers that are children of the controllers package, bu
 For consistency you can also access the base controllers with a similar style:
 
     controllers.routes.application.index()
-  
-
   
 **Form objects in controllers**  
 In a controller there is generally one shared static form object for the controller class. For example, below we show a form object based off of the Book model inside the Books controller:
@@ -119,6 +217,8 @@ Inside of an action we can take this form object and upon view rendering, pass i
     }
 
 The book object is accessible from the form by calling bookForm.get().  You should not depend on this.  If there are validation errors, calling bookForm.get() will throw an exception instead of returning the object.  In all of our form views, we pass both the form and the model instance to the view.
+
+Note that in the play tutorials, the form object is final.  Be careful about editing the form or using fill without setting the output to a new oform.  It is easy to write a bunch of form modification code that doesn't make any changes.  In our examples, we are calling fill in the view render to avoid these issues.
 
 
 **Errors**  

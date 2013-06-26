@@ -1,5 +1,6 @@
 package controllers.admin;
 
+import utils.validation.*;
 import java.util.List;
 import play.mvc.*;
 import play.data.*;
@@ -39,6 +40,10 @@ public class Books extends Controller {
     public static Result create()  {
         Form<Book> filledForm = bookForm.bindFromRequest();
 
+        Validator v = new Validator(filledForm);
+        v.add(new RequiredValidation("name", "Name is required"));
+        filledForm = v.validate();
+
         if(filledForm.hasErrors())  {
             //can't pull out of the form if there are errors
             Book book = new Book();
@@ -52,6 +57,10 @@ public class Books extends Controller {
 
     public static Result update(Long id)  {
         Form<Book> filledForm = bookForm.bindFromRequest();
+
+        Validator v = new Validator(filledForm);
+        v.add(new RequiredValidation("name", "Name is required"));
+        filledForm = v.validate();
 
         if(filledForm.hasErrors())  {
             //can't pull out of the form if there are errors
