@@ -1,5 +1,19 @@
-@(patronForm: Form[models.Patron], book: models.Patron)
+@(patronForm: Form[models.Patron], book: models.Patron, actionRoute: play.api.mvc.Call)
 
-@base("Patrons", "patrons") {
-  PATRONS
+@import helper._
+
+@helper.form(action = actionRoute, 'method -> "POST")  {
+    @inputText(
+        patronForm("name"),
+        '_label -> "Name"
+    )
+
+    @select(
+        patronForm("library.id"),
+        options = Library.selectCollection.toSeq,
+        '_default -> "Choose One", '_label -> "Library"
+    )
+    <div class='actions'>
+        <input type='submit' class='button' formmethod='post' value='Save' />
+    </div>
 }

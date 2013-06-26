@@ -2,10 +2,6 @@
 
 @import helper._
 
-@book.name;
-@bookForm.data.get("name");
-
-
 @helper.form(action = actionRoute, 'method -> "POST")  {
     @inputText(
         bookForm("name"),
@@ -18,8 +14,8 @@
     )
 
     @select(
-        bookForm("library"),
-        options = Library.find.all().map { l => l.id.toString() -> l.name },
+        bookForm("library.id"),
+        options = Library.selectCollection.toSeq,
         '_default -> "Choose One", '_label -> "Library"
     )
     <div class='actions'>

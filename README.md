@@ -1,15 +1,16 @@
 Things to write
 - example of a form input template
-- our validation section
-- reading request parameters
-- passing variables to views
-- json
-- database seeding (with a little reflection)
-- note: the basic play tutorials are well written and informative.  This tutorial assumes you have an understanding of the play basics.  We are trying to cover the next few steps of play development.
+- play devs are unhelpful
+  - http://play.lighthouseapp.com/projects/82401/tickets/504-support-tuple-22-not-just-tuple-18-in-apidataformsscala
+- what to do when the accessors quit working
 
 Working with Play
 ===
 ---
+
+Before starting on this guide, read the [play framework tutorials](http://www.playframework.com/documentation/2.0.4/Home). The [creating a new application](http://www.playframework.com/documentation/2.0.4/NewApplication) tutorial and the [Play 2.0 for Java developers](http://www.playframework.com/documentation/2.0.4/JavaHome) page are both helpful when getting started.  The goal of this tutorial is to explain the next steps: database associations, complex forms, validations, and other components included in every web application.
+
+When reading play tutorials and blog posts, pay attention to the version of play and the language.  Play version 1 and version 2 are as different as Rails 2 and 3.  Most developers are using Scala so Java information is hard to find.
      
    
 Getting Started
@@ -55,6 +56,56 @@ Play offers model-level validations in the form of constraint decorators.  The f
 
 These are nice for simple models, but validations in models can't be used well if you have have multiple forms to generate an object. Since you cant save the object without having it be complete, it's impossible to have multi-page step-based object creation.  To get around this all validations need to be done in the controller.
 
+###JSON
+It is almost impossible to create and parse json using the built in play libraries outside of a controller.  Most example code on the internet only works in scala or only works in the controller.  Specifically ignore any blog post or tutorial that starts like this: "One of the benefits of Play 2.0 is that Java and the Scala share the same underlying library for JSON parsing".
+
+Using the Jackson json parsing library directly is not too painful but a far cry from the ease of ruby.  The main website is located [here](http://jackson.codehaus.org/) and the tutorial page is located [here](http://wiki.fasterxml.com/JacksonInFiveMinutes).
+
+Creating a java object that exactly corresponds to the data in the json request and the ObjectMapper class is one quick way to parse json strings.  The downside of this solution is that a slightly different json format will break the mapping.
+
+    public class TransferredBookCollection {
+
+        public class TransferredBook {
+            public String name;
+            public String description;
+            public String library;
+
+            public TransferredBook() {}
+
+            public Book convertToBook()  {
+                Book b = new Book();
+                b.name = this.name;
+                b.description = this.description;
+                b.library = Library.find.where().eq("name", library).findList().get(0);
+                return b;
+            }
+        }
+
+        public ArrayList<TransferredBook> content;
+        public String type;
+
+        public TransferredBookCollection()  {
+            content = new ArrayList<TransferredBook>();
+        }
+    }
+
+This data structure could parse the following json string using an ObjectMapper.
+
+    {
+        type: "Interlibrary Transfer",
+        content: [
+            {
+                name: "The Red Badge of Courage", 
+                description: "Taking place during the American Civil War, a young private of the Union Army, Henry Fleming, who flees from the field of battle. Overcome with shame, he longs for a wound—a "red badge of courage"—to counteract his cowardice. When his regiment once again faces the enemy, Henry acts as standard-bearer.",
+                library: "Downtown Orlando Public Library"
+            },
+            {
+                name: "The Novelization of Caddyshack",
+                description: "Some people just don't belong.",
+                library: "Downtown Orlando Public Library"
+            }
+        ]
+    }
 
 Controllers
 --------------------------------
@@ -70,11 +121,114 @@ One gotcha is that form data pulled from the request does not necessarily includ
 
   - note changes from play 2.0 to 2.1
 
-**Reading requests parameters**  
-  - in a form and outside of a form 
-**Passing variables to views**  
+**Reading request parameters**
+Reading request parameters is much more difficult here than in other frameworks.  Reading get parameters that aren't part of a form submission is almost impossible.  Reading form parameters looks like this:
 
-**Cloudspace request validation system**  
+    String name = request().body().asFormUrlEncoded().get("name").toString();
+
+If the form does not include the field, this call will throw an exception.  This can be a problem on checkboxes and selects because if the user doesn't select any options, html will not include the input in the post.
+
+I have written some helper methods to make accessing the request easier.
+
+    private static String requestParam(String name)  {
+            return requestParamArray(name)[0];
+    }
+
+    private static String[] requestParamArray(String name)  {
+        if(request().body().asFormUrlEncoded().containsKey(name)) {
+            return request().body().asFormUrlEncoded().get(name);
+        } else {
+            return new String[0];
+        }
+    }
+
+###Controller Validations
+Controller based validations are preferable to model based validations due to their flexibility.  The reject method is used to add errors to the form.  This example shows an error on the name field and a general error on the form object.
+
+    public static Result update(Long id)  {
+        Form<Book> filledForm = bookForm.bindFromRequest();
+
+        if(request().body().asFormUrlEncoded().get("name").toString().equals(""))  {
+            filledForm.reject("name", "Name can't be blank.");
+        }
+        if(Library.find.all().size() == 0)  {
+            filledForm.reject("Books cannot be created if there are no libraries in the system.");
+        }
+
+        if(filledForm.hasErrors())  {
+            Book book = Book.find.byId(id); //can't pull out of the form if there are errors
+            return ok(edit.render(filledForm, book));
+        } else {
+            Book book = filledForm.get();
+            book.update(id);
+            return redirect(controllers.admin.routes.Books.show(book.id));
+        }
+    }
+
+After the form is processed, the hasErrors method is used to determine if the form is valid.  If hasErrors returns false, the get method will throw an exception.  This is why we pass the book object into the view along with the form object.  In the view, you cannot depend on filledForm.get().getId() to setup routes.  You have to explicitly pass an id or a book object.
+
+**Cloudspace controller validation system**  
+Reading a form object is for validations is awfully wordy and leads to some duplicated code in things like phone number and email validations.  We have written a small validation framework to standardize some of this code. 
+
+    import utils.validation.*;
+
+    public static Result update(Long id)  {
+        Form<Book> filledForm = bookForm.bindFromRequest();
+        Validator v = new Validator(filledForm);
+
+        v.add(new RequiredValidation("name", "Name is required"));
+        v.add(new LibrariesExistValidation("Template type is required"));
+
+        filledForm = v.validate();
+        ...
+
+The Validator object collects Validation objects then runs them to determine the form errors.
+
+A few basic validations are included as a demonstration.  Each one needs a constructor and an isValid method.
+
+    public class RegexMatchValidation extends Validation {
+        private Pattern regex;
+
+        public RegexMatchValidation(String field, String errorMessage, Pattern regex)  {
+            super(field, errorMessage);
+            this.regex = regex;
+        }
+
+        public boolean isValid(Form form) {
+            String value = form.data().get(field).toString();
+            Matcher matcher = regex.matcher(value);
+            if(!matcher.find()) {
+                addFieldError();
+                return false;
+            }
+            return true;
+        }
+    }
+
+The constructor should generally call the Validation superclass constructor and set any additional data needed for the validation.  The isValid method should return true if valid.  If an error is detected, it should set the error message with addFieldError or addBaseError and return false.Look at the Validation class for a few more options on setting and managing errors.
+
+###Interacting with views
+
+**Passing variables into views**
+For some reason, the play tutorials gloss over passing variables into views.  The two sticking points are no optional arguments and the scala syntax on the view.
+
+In the controller:
+    
+    public static Result edit(Long id)  {
+        Book book = Book.find.byId(id); 
+
+        return ok(edit.render(bookForm.fill(book), book)
+    }
+
+In the view:
+
+    @(bookForm: Form[models.Book], book: models.Book)
+
+    @base("Books", "books") {
+        Your content here
+    }
+    
+Note that using models.Book is necessary because it occurs before any import models.* calls.  In scala, the variable goes before the type in variable declarations.  Rails uses a similar method to get variables onto views by copying every instance variable onto the controller onto the view instance.
 
 **Routes with namespaced controllers**    
 When you add your controllers to a package the naming conventions for accessing their respective routes isn't quite intuitive.  When play compiles your project a routes object is added to each controller package.  In documentation you may often see references to things like
@@ -88,8 +242,6 @@ This works fine for controllers that are children of the controllers package, bu
 For consistency you can also access the base controllers with a similar style:
 
     controllers.routes.application.index()
-  
-
   
 **Form objects in controllers**  
 In a controller there is generally one shared static form object for the controller class. For example, below we show a form object based off of the Book model inside the Books controller:
@@ -117,6 +269,8 @@ Inside of an action we can take this form object and upon view rendering, pass i
     }
 
 The book object is accessible from the form by calling bookForm.get().  You should not depend on this.  If there are validation errors, calling bookForm.get() will throw an exception instead of returning the object.  In all of our form views, we pass both the form and the model instance to the view.
+
+Note that in the play tutorials, the form object is final.  Be careful about editing the form or using fill without setting the output to a new oform.  It is easy to write a bunch of form modification code that doesn't make any changes.  In our examples, we are calling fill in the view render to avoid these issues.
 
 
 **Errors**  
@@ -194,4 +348,41 @@ Once your databases are defined you must tell the ebeans ORM which models go to 
     ebean.default="models.*"
     ebean.users="models.users.*"
 
+###Seeding the database
+Play loads a class called Global.java every time it starts.  We can hook into the onStart method of that class to perform database seeding.  In this project, the file is located at app/Global.java.  This location can be changed in the application config.  The seeding system needs to check that the database is not already seeded each time runs to avoid overwriting data.  We are using a naive check on the Book model to control all of the database seeding.  A more robust check would be needed for a real project.
+
+
+    public class Global extends GlobalSettings {
+        
+        public void onStart(Application app) {
+            InitialData.insert(app);
+        }
+        
+        static class InitialData {
+            
+            public static void insert(Application app) {
+                //assume the database is empty if there are no books
+                if(Ebean.find(Book.class).findRowCount() == 0) {
+                    
+                    Map<String,List<Object>> all = (Map<String,List<Object>>)Yaml.load("initial_data.yml");
+
+                    Ebean.save(all.get("libraries"));
+                    Ebean.save(all.get("books"));
+                    Ebean.save(all.get("patrons"));
+                    Ebean.save(all.get("transactions"));
+                    
+                    
+                }
+            }
+        }
+    }
+
+In our system, we are storing the seed data in the file conf/initial_data.yml.  Ebean uses reflection to turn the !!models.Book key into an object and call it's constructor.  This version required exact spelling in the yml file to work.  Another option would be to just store the data in the yml file and manually call a constructor that takes a map of data.
+
+    books:
+    - !!models.Book
+        name: "A Tale of Two Cities"
+        description: "A Tale of Two Cities (1859) is a novel by Charles Dickens, set in London and Paris before and during the French Revolution. With well over 200 million copies sold, it ranks among the most famous works in the history of fictional literature.[2]"
+        library: !!models.Library
+            id: 1
 
