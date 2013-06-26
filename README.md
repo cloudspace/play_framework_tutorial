@@ -2,11 +2,11 @@ Working with Play
 ===
 ---
 
-Before starting on this guide, read the [play framework tutorials](http://www.playframework.com/documentation/2.0.4/Home). The [creating a new application](http://www.playframework.com/documentation/2.0.4/NewApplication) tutorial and the [Play 2.0 for Java developers](http://www.playframework.com/documentation/2.0.4/JavaHome) page are both helpful when getting started.  The goal of this tutorial is to explain the next steps: database associations, complex forms, validations, and other components included in every web application.
+Before starting on this guide, read the [Play framework tutorials](http://www.playframework.com/documentation/2.0.4/Home). The [creating a new application](http://www.playframework.com/documentation/2.0.4/NewApplication) tutorial and [Play 2.0 for Java developers](http://www.playframework.com/documentation/2.0.4/JavaHome) page are both helpful when getting started.  The goal of this tutorial is to explain the next steps: database associations, complex forms, validations, and other components included in every web application.
 
-When reading play tutorials and blog posts, pay attention to the version of play and the language.  Play version 1 and version 2 are as different as Rails 2 and 3.  Most developers are using Scala so Java information is hard to find.
+This guide is or Play 2.0.  When reading Play tutorials and blog posts, pay attention to the version of Play and the language.  Play version 1 and version 2 are as different as Rails 2 and 3.  Some but not all of this information is correct for Play 2.1.
 
-The play community seems to stop improving bugs once a workaround is found.  Bugs are common because the two languages doubles the number of framework problems.  Expect long workarounds for some common issues.  At one point, there was a 30-40 line workaround to make multiple selects work after posting a form.  The closing message on [this support ticket](http://play.lighthouseapp.com/projects/82401/tickets/504-support-tuple-22-not-just-tuple-18-in-apidataformsscala) is an average response.
+The Play community seems to stop improving bugs once a workaround is found.  Bugs are common because the two languages doubles the number of framework problems.  Expect long workarounds for some common issues.  At one point, there was a 30-40 line workaround to make multiple selects work after posting a form.  The closing message on [this support ticket](http://play.lighthouseapp.com/projects/82401/tickets/504-support-tuple-22-not-just-tuple-18-in-apidataformsscala) is an average response.
      
    
 Getting Started
@@ -24,37 +24,42 @@ If you already have Java installed, upgrading to 1.7 is as simple as running the
 
 The Play framework can be downloaded from [here](http://www.playframework.com/download).  Once extracted, the folder can be placed anywhere, however it is preferable to sit alongside Java in /usr/share/java/.  This is the same path maven, ant, and junit install to.
 
-Once installed add the play directory to your PATH in ~/.bash_profile, or simply run
+Once installed add the Play directory to your PATH in ~/.bash_profile, or simply run
 
     export PATH=$PATH:/usr/share/java/play-2.X.X
 
 To set the path for just the current terminal session.
 
-###Using play
-Sometimes, the play compiler stops working.  This is most notable when controller changes aren't reflected in the browser and model attribute accessors like getName() are no longer available.  Deleting the target folder, running play compile twice, then running the play webserver fixes this 90% of the time. Simultaneous voodoo incantations improve it to about 95% of the time.
+###Using Play
+Sometimes, the Play compiler stops working.  This is most notable when controller changes aren't reflected in the browser or model attribute accessors like getName() are no longer available.  Deleting the target folder, running Play compile twice, then running the Play webserver fixes this 90% of the time. Simultaneous voodoo incantations improve it to about 95% of the time.
 
 Models
 ---
-In play the models are much closer to the database than seen in a framework like rails.  Instead of writing the migrations and having the models built from the db, the models actually define the database and the migrations can be automatically generated from the changes.
+In Play the models are much closer to the database than in a framework like rails.  Instead of writing the migrations and having the models built from the db, the models actually define the database and the migrations can be automatically generated from the changes.
 
 
 ### Decorators
 
 The javax.persistence package offers a number of decorators to help define database interaction.
 
-The @Entity decorator marks a class as being a Model and when play evolutions are run a database table will be generated for it.  
+The @Entity decorator marks a class as being a Model and when Play evolutions are run a database table will be generated for it.  
 
 The @id decorator goes on a member of an @Entity class and defines the database id field.
 
-There area number of decorators available between play and javax that are viewable in their respective documentation.
+The @ManyToOne and @OneToMany decorators are used to managed database associations.
+
+The @Column decorator is used to manager database attributes.  This common version sets the database column to a longtext, @Column(columnDefinition = "TEXT").
+
+
+There area number of decorators available between Play and javax that are viewable in their respective documentation.
 
 ### Validations
 Play offers model-level validations in the form of constraint decorators.  The full list can be seen on [this page](http://www.playframework.com/documentation/api/2.0/java/play/data/validation/Constraints.html).  Many default validations map directly to database changes.  For example, the @Required decorator sets the column in the db to not null.
 
-These are nice for simple models, but validations in models can't be used well if you have have multiple forms to generate an object. Since you cant save the object without having it be complete, it's impossible to have multi-page step-based object creation.  To get around this all validations need to be done in the controller.
+These are nice for simple models, but validations in models are lacking if you are using multiple forms to manage an object.  Due to the way Play's Form object works, attributes not included on the form will throw validation errors even if they are set in the database.  To get around this we are performing validations in the controller.
 
 ###JSON
-It is almost impossible to create and parse json using the built in play libraries outside of a controller.  Most example code on the internet only works in scala or only works in the controller.  Specifically ignore any blog post or tutorial that starts like this: "One of the benefits of Play 2.0 is that Java and the Scala share the same underlying library for JSON parsing".
+It is almost impossible to create and parse json using the built in Play libraries outside of a controller.  Most example code on the internet only works in Scala or only works in the controller.  Specifically ignore any blog post or tutorial that starts like this: "One of the benefits of Play 2.0 is that Java and the Scala share the same underlying library for JSON parsing".
 
 Using the Jackson json parsing library directly is not too painful but a far cry from the ease of ruby.  The main website is located [here](http://jackson.codehaus.org/) and the tutorial page is located [here](http://wiki.fasterxml.com/JacksonInFiveMinutes).
 
@@ -107,18 +112,19 @@ This data structure could parse the following json string using an ObjectMapper.
 Controllers
 --------------------------------
 ### Saving and Updating
-Often in tutorials the methods save and update are used on models without much description being given.  These methods are almost identical, but misunderstanding them can lead to many issues.  Save works as expected, saving the object to the database if none exists, or updating the existing object.  Update differers in that it takes in an id parameter, sets the current object to have that id, and then calls save.
+Often in tutorials the methods save and update are used on models without much description being given.  These methods are almost identical, but misunderstanding them can lead to many issues.  Save works as expected.  It inserts the object in the database if none exists or updates an existing oobject.  Update differs in that it takes in an id parameter, sets the current object to have that id, and then calls save.  If you pull an object from the database and call update on it with a different id, it will duplicate the object.
 
-Update allows you to basically take one object and save it's contents onto an object with another id.  In most cases save is more than enough.
+Form data pulled from the request does not necessarily include the object id.  If you don't check that exists and set it, calling save can create a duplicate of the object in the database.  Edit forms can use update and an id in the url to get around this issue.
 
-One gotcha is that form data pulled from the request does not necessarily include the object id.  If you don't check that exists and set it, calling save can create a duplicate of the object in the database.
+Play does not automatically manage many to many relationships when calling save.  Each time you update or save an object with a many to many relationship, you must also call:
+
+   Ebean.deleteManyToManyAssociations(book, "libraries");
+   book.saveManyToManyAssociations("libraries"); 
 
 ### Parameters
-**Optional Parameters in routes**  
-
-  - note changes from play 2.0 to 2.1
 
 **Reading request parameters**
+
 Reading request parameters is much more difficult here than in other frameworks.  Reading get parameters that aren't part of a form submission is almost impossible.  Reading form parameters looks like this:
 
     String name = request().body().asFormUrlEncoded().get("name").toString();
@@ -164,8 +170,8 @@ Controller based validations are preferable to model based validations due to th
 
 After the form is processed, the hasErrors method is used to determine if the form is valid.  If hasErrors returns false, the get method will throw an exception.  This is why we pass the book object into the view along with the form object.  In the view, you cannot depend on filledForm.get().getId() to setup routes.  You have to explicitly pass an id or a book object.
 
-**Cloudspace controller validation system**  
-Reading a form object is for validations is awfully wordy and leads to some duplicated code in things like phone number and email validations.  We have written a small validation framework to standardize some of this code. 
+**Cloudspace controller validation system**
+Writing validations directly in controllers can lead to duplicated code in things like phone number and email validations.  We have written a small validation framework to standardize some of this code. It also moves some of the complexity away from already complex controller actions.
 
     import utils.validation.*;
 
@@ -181,7 +187,7 @@ Reading a form object is for validations is awfully wordy and leads to some dupl
 
 The Validator object collects Validation objects then runs them to determine the form errors.
 
-A few basic validations are included as a demonstration.  Each one needs a constructor and an isValid method.
+A few basic validations are included as a demonstration.  Each one must include the  constructor and override the isValid method.
 
     public class RegexMatchValidation extends Validation {
         private Pattern regex;
@@ -207,7 +213,8 @@ The constructor should generally call the Validation superclass constructor and 
 ###Interacting with views
 
 **Passing variables into views**
-For some reason, the play tutorials gloss over passing variables into views.  The two sticking points are no optional arguments and the scala syntax on the view.
+
+For some reason, the Play tutorials gloss over passing variables into views.  The two sticking points are no optional arguments and the Scala syntax on the view.
 
 In the controller:
     
@@ -225,10 +232,10 @@ In the view:
         Your content here
     }
     
-Note that using models.Book is necessary because it occurs before any import models.* calls.  In scala, the variable goes before the type in variable declarations.  Rails uses a similar method to get variables onto views by copying every instance variable onto the controller onto the view instance.
+In Scala, the variable goes before the type in variable declarations.  Rails uses a similar method to get variables onto views by copying every instance variable onto the controller onto the view instance.
 
 **Routes with namespaced controllers**    
-When you add your controllers to a package the naming conventions for accessing their respective routes isn't quite intuitive.  When play compiles your project a routes object is added to each controller package.  In documentation you may often see references to things like
+When you add your controllers to a package the naming conventions for accessing their respective routes isn't quite intuitive.  When Play compiles your project a routes object is added to each controller package.  In documentation you may often see references to things like
 
     routes.controllers.application.index()
 
@@ -265,15 +272,14 @@ Inside of an action we can take this form object and upon view rendering, pass i
         }
     }
 
-The book object is accessible from the form by calling bookForm.get().  You should not depend on this.  If there are validation errors, calling bookForm.get() will throw an exception instead of returning the object.  In all of our form views, we pass both the form and the model instance to the view.
+The book object is accessible from the form by calling bookForm.get().  You should not depend on this.  If there are validation errors, calling bookForm.get() will throw an exception instead of returning the object.  In all of our form views, we pass both the form and the model instance to the view to deal with this problem.
 
-Note that in the play tutorials, the form object is final.  Be careful about editing the form or using fill without setting the output to a new oform.  It is easy to write a bunch of form modification code that doesn't make any changes.  In our examples, we are calling fill in the view render to avoid these issues.
+Note that in the Play tutorials, the form object is final.  Be careful about editing the form or using fill without setting the output to a new form.  It is easy to write a bunch of form modification code that doesn't make any changes.  In our examples, we are calling fill in the view render to avoid these issues.
 
 
-**Errors**  
-There are two main types of errors that need to be thrown: Form validation errors, and general HTTP errors.
+**HTTP Status Codes**  
 
-The general HTTP status errors are quite simple to use, and play provides result methods for each.  Instead of retuning ok() from an action you simply return the approrpiate result.  The full list of available results can be found [here](http://www.playframework.com/documentation/api/2.0/java/play/mvc/Results.html#method_summary).  You can see an example of retuning a notFound result (HTP 404) in the previous example.
+The general HTTP status codes are quite simple to use, and Play provides result methods for each.  Instead of retuning ok() from an action you simply return the appropriate result.  The full list of available results can be found [here](http://www.playframework.com/documentation/api/2.0/java/play/mvc/Results.html#method_summary).  You can see an example of retuning a notFound result (HTP 404) in the previous example.
 
 **response() and setting headers**  
 In each controller action there is an available method called response().  When called it returns the current response object which will eventually be returned to the end user.  We can use this object to set any appropriate HTTP Headers.
@@ -298,14 +304,14 @@ For example, to set the HTTP headers to force a file download of a list of book 
 
 Scala Views
 --------------------------------
-Play uses [scala](http://www.scala-lang.org/) as it's templating language.  You can also use scala for the models and controllers, but it's sometimes best used in just views so the java backend code is usable in non-play applications.  The full play scala documentation is available [here](http://www.playframework.com/documentation/api/2.1.1/scala/index.html#package).
+Play uses [Scala](http://www.scala-lang.org/) as it's templating language.  You can also use Scala for the models and controllers, but it's sometimes best used in just views so the java backend code is usable in non-Play applications.  The full Play Scala documentation is available [here](http://www.playframework.com/documentation/api/2.1.1/scala/index.html#package).  Note that Play 1.0 used Groovy as the templating language.  Be careful when searching for view help to only look at Scala solutions.
 
 See [this](http://www.playframework.com/documentation/2.1.1/JavaTemplates) tutorial on how to create Scala tempaltes.  It's written from a Java developers perspective and shows the transititions between the languages well.
 
 **Creating html forms**  
 There are a number of form template helpers provided by play.  These can hook in to form rendered objects and will automatically provide the correct values as well as display appropriate field errors.
 
-See the [scala form documentation](http://www.playframework.com/documentation/2.0/ScalaFormHelpers).
+See the [Scala form documentation](http://www.playframework.com/documentation/2.0/ScalaFormHelpers).
 
 The default form helpers are located in the play library at framework/src/play/src/main/scala/views/helper.  When creating a new helper, use these as a base.  They are all wrappers around the generic @input helper.
 
@@ -314,7 +320,7 @@ You can also manually create forms in straight HTML, you just have to make sure 
 
 **Tips**  
 
-- There is no elseif in scala. You unfortunately have to nest if statements for the same result.
+- There is no elseif in Scala. You unfortunately have to nest if statements for the same result.
 - Defining variables reqires you to specify a block of code in which the variable exists in.  This makes for very messy code; it is best to avoid  this if possible and handle as much as you can in the controller
 - Comments can be multi-line and are use the syntax *@\* comment here \*@*
 - Accessing attributes of a model instance should be done with getters instead of directly calling the variable.  For example, use book.getLibrary instead of book.library.  When accessing the variables directly, queries are not always run.  This can return a null when the value is not null.
