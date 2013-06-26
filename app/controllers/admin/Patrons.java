@@ -1,5 +1,6 @@
 package controllers.admin;
 
+import utils.validation.*;
 import java.util.List;
 import play.mvc.*;
 import play.data.*;
@@ -37,8 +38,16 @@ public class Patrons extends Controller {
         return ok(edit.render(patronForm.fill(patron), patron));
     }
 
+    private static Form<Patron> formValidations(Form<Patron> filledForm)  {
+        Validator v = new Validator(filledForm);
+        v.add(new RequiredValidation("name", "Name is required"));
+        v.add(new RequiredValidation("library.id", "A library must be selected"));
+        return v.validate();
+    }
+
     public static Result create()  {
         Form<Patron> filledForm = patronForm.bindFromRequest();
+        filledForm = formValidations(filledForm);
 
         if(filledForm.hasErrors())  {
             Patron patron = new Patron();
@@ -52,6 +61,7 @@ public class Patrons extends Controller {
 
     public static Result update(Long id)  {
         Form<Patron> filledForm = patronForm.bindFromRequest();
+        filledForm = formValidations(filledForm);
 
         if(filledForm.hasErrors())  {
             Patron patron = Patron.find.byId(id);

@@ -37,12 +37,18 @@ public class Books extends Controller {
         return ok(edit.render(bookForm.fill(book), book));
     }
 
-    public static Result create()  {
-        Form<Book> filledForm = bookForm.bindFromRequest();
-
+    private static Form<Book> formValidations(Form<Book> filledForm)  {
         Validator v = new Validator(filledForm);
         v.add(new RequiredValidation("name", "Name is required"));
-        filledForm = v.validate();
+        v.add(new RequiredValidation("description", "Description is required"));
+        v.add(new RequiredValidation("library.id", "A library must be selected"));
+        return v.validate();
+    }
+
+    public static Result create()  {
+        Form<Book> filledForm = bookForm.bindFromRequest();
+        filledForm = formValidations(filledForm);
+
 
         if(filledForm.hasErrors())  {
             //can't pull out of the form if there are errors
@@ -57,10 +63,7 @@ public class Books extends Controller {
 
     public static Result update(Long id)  {
         Form<Book> filledForm = bookForm.bindFromRequest();
-
-        Validator v = new Validator(filledForm);
-        v.add(new RequiredValidation("name", "Name is required"));
-        filledForm = v.validate();
+        filledForm = formValidations(filledForm);
 
         if(filledForm.hasErrors())  {
             //can't pull out of the form if there are errors

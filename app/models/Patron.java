@@ -34,4 +34,13 @@ public class Patron extends Model {
     public Library library;
 
     public Patron() {}
+
+    public boolean hasOverdueBooks()  {
+        for(Transaction t : transactions)  {
+            if(t.overdue())  {
+                return true;
+            }
+        }
+        return false;
+    }
 }
