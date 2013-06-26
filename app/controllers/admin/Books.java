@@ -28,7 +28,7 @@ public class Books extends Controller {
     public static Result newRecord()  {
         Book book = new Book();
 
-        return ok(newRecord.render(form(Book.class).fill(book), book));
+        return ok(newRecord.render(bookForm.fill(book), book));
     }
 
     public static Result edit(Long id)  {

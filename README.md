@@ -1,9 +1,3 @@
-Things to write
-- example of a form input template
-- play devs are unhelpful
-  - http://play.lighthouseapp.com/projects/82401/tickets/504-support-tuple-22-not-just-tuple-18-in-apidataformsscala
-- what to do when the accessors quit working
-
 Working with Play
 ===
 ---
@@ -11,6 +5,8 @@ Working with Play
 Before starting on this guide, read the [play framework tutorials](http://www.playframework.com/documentation/2.0.4/Home). The [creating a new application](http://www.playframework.com/documentation/2.0.4/NewApplication) tutorial and the [Play 2.0 for Java developers](http://www.playframework.com/documentation/2.0.4/JavaHome) page are both helpful when getting started.  The goal of this tutorial is to explain the next steps: database associations, complex forms, validations, and other components included in every web application.
 
 When reading play tutorials and blog posts, pay attention to the version of play and the language.  Play version 1 and version 2 are as different as Rails 2 and 3.  Most developers are using Scala so Java information is hard to find.
+
+The play community seems to stop improving bugs once a workaround is found.  Bugs are common because the two languages doubles the number of framework problems.  Expect long workarounds for some common issues.  At one point, there was a 30-40 line workaround to make multiple selects work after posting a form.  The closing message on [this support ticket](http://play.lighthouseapp.com/projects/82401/tickets/504-support-tuple-22-not-just-tuple-18-in-apidataformsscala) is an average response.
      
    
 Getting Started
@@ -34,7 +30,8 @@ Once installed add the play directory to your PATH in ~/.bash_profile, or simply
 
 To set the path for just the current terminal session.
 
-
+###Using play
+Sometimes, the play compiler stops working.  This is most notable when controller changes aren't reflected in the browser and model attribute accessors like getName() are no longer available.  Deleting the target folder, running play compile twice, then running the play webserver fixes this 90% of the time. Simultaneous voodoo incantations improve it to about 95% of the time.
 
 Models
 ---
@@ -310,6 +307,8 @@ There are a number of form template helpers provided by play.  These can hook in
 
 See the [scala form documentation](http://www.playframework.com/documentation/2.0/ScalaFormHelpers).
 
+The default form helpers are located in the play library at framework/src/play/src/main/scala/views/helper.  When creating a new helper, use these as a base.  They are all wrappers around the generic @input helper.
+
 You can also manually create forms in straight HTML, you just have to make sure the input names match up correctly.  Play translates underscores to periods (amongst some other things) so if you're going to manually write a form it's best to create an input helper, check the name, then write your form using the correct name.
 
 
@@ -318,9 +317,7 @@ You can also manually create forms in straight HTML, you just have to make sure 
 - There is no elseif in scala. You unfortunately have to nest if statements for the same result.
 - Defining variables reqires you to specify a block of code in which the variable exists in.  This makes for very messy code; it is best to avoid  this if possible and handle as much as you can in the controller
 - Comments can be multi-line and are use the syntax *@\* comment here \*@*
-
-
-
+- Accessing attributes of a model instance should be done with getters instead of directly calling the variable.  For example, use book.getLibrary instead of book.library.  When accessing the variables directly, queries are not always run.  This can return a null when the value is not null.
 
 
 Database Setup
