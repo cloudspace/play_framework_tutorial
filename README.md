@@ -228,7 +228,7 @@ In the view:
 
     @(bookForm: Form[models.Book], book: models.Book)
 
-    @base("Books", "books") {
+    @mainLayout("Books", "books") {
         Your content here
     }
     
