@@ -28,7 +28,8 @@ public class Book extends Model {
     public Long getId()  { return id; }
 
     public String name;
-
+    public String getName() { return name; }
+    
     @Column(columnDefinition = "TEXT")
     public String description;
 
@@ -79,22 +80,21 @@ public class Book extends Model {
     }
 
     /**
-     * Checks the book in
+     * Checks the book out
      */
-    // public boolean checkOut(Patron patron)
-    // {
-    //     // Fail if the book is already checked in
-    //     if (this.checkedIn()) return false;
+    public boolean checkOut(Patron patron)
+    {
+        // Fail if the book is not checked in
+        if (!this.checkedIn()) return false;
 
-    //     // Fail if there is no associated transactions
-    //     if (this.transactions.size() == 0) return false;
-
-    //     // Check the book in
-    //     Transaction lastTransaction = this.transactions.get(this.transactions.size() - 1);
-    //     lastTransaction.checkinAt = new Date();
+        // Check the book in
+        Transaction transaction = new Transaction();
+        transaction.book = this;
+        transaction.patron = patron;
+        transaction.save();
         
-    //     return true;
-    // }
+        return true;
+    }
 
 
     /**

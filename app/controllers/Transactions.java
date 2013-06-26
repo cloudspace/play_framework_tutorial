@@ -1,10 +1,12 @@
 package controllers;
 
 import java.util.List;
+import java.util.ArrayList;
 import play.mvc.*;
 import play.data.*;
 import models.*;
 import views.html.*;
+import com.avaje.ebean.Expr;
 
 public class Transactions extends Controller {
 
@@ -21,8 +23,6 @@ public class Transactions extends Controller {
 
     public static Result libraryIndex(Long id)  {
         Library library = Library.find.byId(id);
-        // List<Transaction> openTransactionList = Transaction.find
-        //                                                    .where().isNull("checkinAt").where().eq("library.id",library.id).findList();
 
         List<Book> loanedBookList = Book.find
                                            .fetch("library").fetch("transactions")
@@ -30,12 +30,22 @@ public class Transactions extends Controller {
                                            .where().isNull("transactions.checkinAt")
                                            .findList();
 
-        List<Book> availableBookList = Book.find
-                                           .fetch("library").fetch("transactions").where().eq("library.id",library.id)
-                                           .where().isNotNull("transactions.checkinAt")
-                                           .findList();
+        // This is not the best way to do this, but ebeans is weird
+        List<Book> allBooks = Book.find
+                                       .fetch("library").fetch("transactions")
+                                       .where().eq("library.id",library.id).findList();
+
+        List<Book> availableBookList = new ArrayList<Book>();
+
+        for (Book book : allBooks)
+        {
+            if (!loanedBookList.contains(book))
+                availableBookList.add(book);
+        }
         
-        return ok(transactions.render(library, loanedBookList, availableBookList));
+        List<Patron> patrons = Patron.find.where().eq("library.id",library.id).findList();
+
+        return ok(transactions.render(library, patrons, loanedBookList, availableBookList));
     }
 
     /**
@@ -52,8 +62,17 @@ public class Transactions extends Controller {
      * - bobadRequest and patron must be attached to the same library
      * - checkoutAt must be set
      */
-    public static Result saveCheckout(Long id)  {
-        return badRequest("Not implemented yet");
+    public static Result saveCheckout(Long bookId)  {
+        Book book = Book.find.byId(bookId);
+
+        if(!request().body().asFormUrlEncoded().containsKey("patron.id")) return badRequest("No patron selected");
+        String patronId = request().body().asFormUrlEncoded().get("patron.id")[0];
+        Patron patron = Patron.find.byId(Long.parseLong(patronId, 10));
+
+        book.checkOut(patron);
+
+
+        return redirect(controllers.routes.Transactions.libraryIndex(book.library.id));
     }
 
     /**
@@ -72,7 +91,6 @@ public class Transactions extends Controller {
         Book book = Book.find.byId(bookId);
         book.checkIn();
 
-        return redirect(controllers.routes.Transactions.index());
-
+        return redirect(controllers.routes.Transactions.libraryIndex(book.library.id));
     }
 }

@@ -1,26 +1,38 @@
-@(library: models.Library, loanedBooks: List[models.Book], availablebooks: List[models.Book])
+@(library: models.Library, patrons: List[models.Patron], loanedBooks: List[models.Book], availablebooks: List[models.Book])
 
 @base("Check In / Check Out", "transactions") {
   <div class="pull-right" style="margin-top:28px; font-style: oblique;">Library Book Management</div>
   <h2>@library.name</h2>
 
-  <h4>Loaned Books</h4>
-  @for(book <- loanedBooks) {
-    @defining(book.transactions.get(book.transactions.size()-1)) { transaction =>
-      
-      <form action="@routes.Transactions.saveCheckin(transaction.getId())" method="post">
-      <div>
-        <p><input type="submit" value="Check In" style="margin-right:15px"> <strong>@transaction.book.getName()</strong> - Checked out by <em>@transaction.patron.getName()</em></p>
-      </div>
-      </form>
+  @if(loanedBooks.size() > 0){
+    <h4>Loaned Books</h4>
+    @for(book <- loanedBooks) {
+      @defining(book.transactions.get(book.transactions.size()-1)) { transaction =>
+        @helper.form(action = routes.Transactions.saveCheckin(book.id)) {
+          <div>
+            <p><input type="submit" value="Check In" style="margin-right:15px"> <strong>@book.name</strong> - Checked out by <em>@transaction.patron.getName()</em></p>
+          </div>
+        }
+      }
     }
   }
 
   <h4>Available Books</h4>
   @for(book <- availablebooks) {
-    <div>
-      <p>@book.name</p>
-    </div>
+    @helper.form(action = routes.Transactions.saveCheckout(book.id)) {
+      <div>
+        <p>
+        <strong>@book.name</strong> - 
+          <select name="patron.id">
+            <option value="">Check out as</option>
+            @for(patron <- patrons){
+              <option value="@patron.id">@patron.name</option>
+            }
+          </select>
+          <input type="submit" value="Check Out" style="margin-right:15px" />
+        </p>
+      </div>
+    }
   }
 
 }

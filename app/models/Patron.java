@@ -25,7 +25,8 @@ public class Patron extends Model {
     public Long id;
 
     public String name;
-
+    public String getName() { return name; }
+    
     @OneToMany(mappedBy="patron")
     public List<Transaction> transactions;
 

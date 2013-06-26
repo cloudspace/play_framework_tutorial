@@ -79,21 +79,12 @@ transactions:
         patron: !!models.Patron
             id: 2
         book: !!models.Book
-            id: 3
+            id: 5
     - !!models.Transaction
         patron: !!models.Patron
             id: 2
         book: !!models.Book
-            id: 4
-    - !!models.Transaction
-        patron: !!models.Patron
-            id: 2
-        book: !!models.Book
-            id: 1
-    - !!models.Transaction
-        patron: !!models.Patron
-            id: 3
-        book: !!models.Book
-            id: 2
+            id: 6
+
 
 
