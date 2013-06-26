@@ -1,10 +1,10 @@
 Things to write
 - example of a form input template
 - json
-- database seeding (with a little reflection)
 - note: the basic play tutorials are well written and informative.  This tutorial assumes you have an understanding of the play basics.  We are trying to cover the next few steps of play development.
 - play devs are unhelpful
   - http://play.lighthouseapp.com/projects/82401/tickets/504-support-tuple-22-not-just-tuple-18-in-apidataformsscala
+- documentation issues: v1 vs v2 and java vs scala
 
 Working with Play
 ===
@@ -296,4 +296,41 @@ Once your databases are defined you must tell the ebeans ORM which models go to 
     ebean.default="models.*"
     ebean.users="models.users.*"
 
+###Seeding the database
+Play loads a class called Global.java every time it starts.  We can hook into the onStart method of that class to perform database seeding.  In this project, the file is located at app/Global.java.  This location can be changed in the application config.  The seeding system needs to check that the database is not already seeded each time runs to avoid overwriting data.  We are using a naive check on the Book model to control all of the database seeding.  A more robust check would be needed for a real project.
+
+
+    public class Global extends GlobalSettings {
+        
+        public void onStart(Application app) {
+            InitialData.insert(app);
+        }
+        
+        static class InitialData {
+            
+            public static void insert(Application app) {
+                //assume the database is empty if there are no books
+                if(Ebean.find(Book.class).findRowCount() == 0) {
+                    
+                    Map<String,List<Object>> all = (Map<String,List<Object>>)Yaml.load("initial_data.yml");
+
+                    Ebean.save(all.get("libraries"));
+                    Ebean.save(all.get("books"));
+                    Ebean.save(all.get("patrons"));
+                    Ebean.save(all.get("transactions"));
+                    
+                    
+                }
+            }
+        }
+    }
+
+In our system, we are storing the seed data in the file conf/initial_data.yml.  Ebean uses reflection to turn the !!models.Book key into an object and call it's constructor.  This version required exact spelling in the yml file to work.  Another option would be to just store the data in the yml file and manually call a constructor that takes a map of data.
+
+    books:
+    - !!models.Book
+        name: "A Tale of Two Cities"
+        description: "A Tale of Two Cities (1859) is a novel by Charles Dickens, set in London and Paris before and during the French Revolution. With well over 200 million copies sold, it ranks among the most famous works in the history of fictional literature.[2]"
+        library: !!models.Library
+            id: 1
 
