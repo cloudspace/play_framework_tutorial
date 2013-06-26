@@ -1,14 +1,16 @@
 Things to write
 - example of a form input template
-- json
-- note: the basic play tutorials are well written and informative.  This tutorial assumes you have an understanding of the play basics.  We are trying to cover the next few steps of play development.
 - play devs are unhelpful
   - http://play.lighthouseapp.com/projects/82401/tickets/504-support-tuple-22-not-just-tuple-18-in-apidataformsscala
-- documentation issues: v1 vs v2 and java vs scala
+- what to do when the accessors quit working
 
 Working with Play
 ===
 ---
+
+Before starting on this guide, read the [play framework tutorials](http://www.playframework.com/documentation/2.0.4/Home). The [creating a new application](http://www.playframework.com/documentation/2.0.4/NewApplication) tutorial and the [Play 2.0 for Java developers](http://www.playframework.com/documentation/2.0.4/JavaHome) page are both helpful when getting started.  The goal of this tutorial is to explain the next steps: database associations, complex forms, validations, and other components included in every web application.
+
+When reading play tutorials and blog posts, pay attention to the version of play and the language.  Play version 1 and version 2 are as different as Rails 2 and 3.  Most developers are using Scala so Java information is hard to find.
      
    
 Getting Started
@@ -54,6 +56,56 @@ Play offers model-level validations in the form of constraint decorators.  The f
 
 These are nice for simple models, but validations in models can't be used well if you have have multiple forms to generate an object. Since you cant save the object without having it be complete, it's impossible to have multi-page step-based object creation.  To get around this all validations need to be done in the controller.
 
+###JSON
+It is almost impossible to create and parse json using the built in play libraries outside of a controller.  Most example code on the internet only works in scala or only works in the controller.  Specifically ignore any blog post or tutorial that starts like this: "One of the benefits of Play 2.0 is that Java and the Scala share the same underlying library for JSON parsing".
+
+Using the Jackson json parsing library directly is not too painful but a far cry from the ease of ruby.  The main website is located [here](http://jackson.codehaus.org/) and the tutorial page is located [here](http://wiki.fasterxml.com/JacksonInFiveMinutes).
+
+Creating a java object that exactly corresponds to the data in the json request and the ObjectMapper class is one quick way to parse json strings.  The downside of this solution is that a slightly different json format will break the mapping.
+
+    public class TransferredBookCollection {
+
+        public class TransferredBook {
+            public String name;
+            public String description;
+            public String library;
+
+            public TransferredBook() {}
+
+            public Book convertToBook()  {
+                Book b = new Book();
+                b.name = this.name;
+                b.description = this.description;
+                b.library = Library.find.where().eq("name", library).findList().get(0);
+                return b;
+            }
+        }
+
+        public ArrayList<TransferredBook> content;
+        public String type;
+
+        public TransferredBookCollection()  {
+            content = new ArrayList<TransferredBook>();
+        }
+    }
+
+This data structure could parse the following json string using an ObjectMapper.
+
+    {
+        type: "Interlibrary Transfer",
+        content: [
+            {
+                name: "The Red Badge of Courage", 
+                description: "Taking place during the American Civil War, a young private of the Union Army, Henry Fleming, who flees from the field of battle. Overcome with shame, he longs for a wound—a "red badge of courage"—to counteract his cowardice. When his regiment once again faces the enemy, Henry acts as standard-bearer.",
+                library: "Downtown Orlando Public Library"
+            },
+            {
+                name: "The Novelization of Caddyshack",
+                description: "Some people just don't belong.",
+                library: "Downtown Orlando Public Library"
+            }
+        ]
+    }
 
 Controllers
 --------------------------------
