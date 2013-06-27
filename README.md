@@ -146,6 +146,7 @@ I have written some helper methods to make accessing the request easier.
     }
 
 ###Controller Validations
+
 Controller based validations are preferable to model based validations due to their flexibility.  The reject method is used to add errors to the form.  This example shows an error on the name field and a general error on the form object.
 
     public static Result update(Long id)  {
@@ -179,8 +180,8 @@ Writing validations directly in controllers can lead to duplicated code in thing
         Form<Book> filledForm = bookForm.bindFromRequest();
         Validator v = new Validator(filledForm);
 
-        v.add(new RequiredValidation("name", "Name is required"));
-        v.add(new LibrariesExistValidation("Template type is required"));
+        v.add(new RequiredValidation("name", "Name can't be bank."));
+        v.add(new LibrariesExistValidation("Books cannot be created if there are no libraries in the system."));
 
         filledForm = v.validate();
         ...
