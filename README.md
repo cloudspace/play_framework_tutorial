@@ -4,7 +4,7 @@ Working with Play
 
 Before starting on this guide, read the [Play framework tutorials](http://www.playframework.com/documentation/2.0.4/Home). The [creating a new application](http://www.playframework.com/documentation/2.0.4/NewApplication) tutorial and [Play 2.0 for Java developers](http://www.playframework.com/documentation/2.0.4/JavaHome) page are both helpful when getting started.  The goal of this tutorial is to explain the next steps: database associations, complex forms, validations, and other components included in every web application.
 
-This guide is or Play 2.0.  When reading Play tutorials and blog posts, pay attention to the version of Play and the language.  Play version 1 and version 2 are as different as Rails 2 and 3.  Some but not all of this information is correct for Play 2.1.
+This guide is for Play 2.0.  When reading Play tutorials and blog posts, pay attention to the version of Play and the language.  Play version 1 and version 2 are as different as Rails 2 and 3.  Some but not all of this information is correct for Play 2.1.
 
 There are bugs for common issues in the Play framework.  Expect long workarounds for some common issues.  At one point, there was a 30-40 line workaround to make multiple selects work after posting a form.  There is not necessarily a solution to a problem that feels like a best practice solution.  Once a workaround is found bug fixes are given lower priorities by the Play developers.  The closing message on [this support ticket](http://play.lighthouseapp.com/projects/82401/tickets/504-support-tuple-22-not-just-tuple-18-in-apidataformsscala) is representative of the thought process.  
      
@@ -145,7 +145,7 @@ I have written some helper methods to make accessing the request easier.
         }
     }
 
-###Controller Validations
+###Controller Validations  
 
 Controller based validations are preferable to model based validations due to their flexibility.  The reject method is used to add errors to the form.  This example shows an error on the name field and a general error on the form object.
 
