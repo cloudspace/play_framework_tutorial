@@ -134,7 +134,7 @@ If the form does not include the field, this call will throw an exception.  This
 I have written some helper methods to make accessing the request easier.
 
     private static String requestParam(String name)  {
-            return requestParamArray(name)[0];
+        return requestParamArray(name)[0];
     }
 
     private static String[] requestParamArray(String name)  {
@@ -238,7 +238,7 @@ In Scala, the variable goes before the type in variable declarations.  Rails use
 **Routes with namespaced controllers**    
 When you add your controllers to a package the naming conventions for accessing their respective routes isn't quite intuitive.  When Play compiles your project a routes object is added to each controller package.  In documentation you may often see references to things like
 
-    routes.controllers.application.index()
+    routes.controllers.Application.index()
 
 This works fine for controllers that are children of the controllers package, but when in a sub package they needed to be referenced as follows:
 
@@ -246,7 +246,7 @@ This works fine for controllers that are children of the controllers package, bu
 
 For consistency you can also access the base controllers with a similar style:
 
-    controllers.routes.application.index()
+    controllers.routes.Application.index()
   
 **Form objects in controllers**  
 In a controller there is generally one shared static form object for the controller class. For example, below we show a form object based off of the Book model inside the Books controller:
